@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>English words</title>
+	<link rel="shortcut icon" href="https://img.icons8.com/ios/64/000000/book.png" type="image/x-icon">
+	<link href="https://fonts.googleapis.com/css2?family=Spartan&display=swap" rel="stylesheet">
+	
+	<style>
+		body {
+			background: #F2994A;
+			background: -webkit-linear-gradient(to right, #F2994A, #F2C94C);
+			background: linear-gradient(to right, #F2994A, #F2C94C);
+			font-family: 'Spartan', sans-serif;
+			text-align: center;
+			font-size: 10px;
+		}
+
+		.slice {
+			width: 60%;
+			max-width: 1080px;
+			height: 100%;
+			display: inline-block;
+			padding-top: 20%;
+		}
+
+		.slice button {
+			width: 63%;
+			height: 5em;
+			border-radius: 15px;
+			border: 10px;
+			padding: 10px;
+			margin: 10px;
+			font-weight: bold;
+		}
+
+		.slice input {
+			width: 29%;
+			border-radius: 15px;
+			border: 10px;
+			padding: 7px;
+			margin: 10px;
+		}
+
+		.slice h3 {
+			padding: 7px;
+			margin: 10px;
+			font-size: 3em;
+		}
+
+		.slice button:hover {
+			cursor: pointer;
+			background: linear-gradient(to right, #11998e, #38ef7d);
+			color: white;
+		}
+
+		.slice button, input:focus {
+			outline: none;
+		}
+
+		.learning {
+			width: 60%;
+			max-width: 1080px;
+			height: 100%;
+			display: none;
+			padding-top: 20%;
+		}
+
+		.learning button {
+			width: 50%;
+			height: 3em;
+			border-radius: 15px;
+			border: 10px;
+			padding: 10px;
+			margin: 10px;
+			font-weight: bold;
+		}
+
+		#word {
+			font-size: 3em;
+			padding: 7px;
+			margin: 10px;
+		}
+
+		.learning button:hover {
+			cursor: pointer;
+			background: linear-gradient(to right, #11998e, #38ef7d);
+			color: white;
+		}
+
+		.learning button, input:focus {
+			outline: none;
+		}
+
+		#answer {
+			font-size: 3em;
+			padding: 7px;
+			margin: 10px;
+			display: none;
+		}
+
+		#btn {
+			display: none;
+		}
+
+		#inp {
+			display: inline-block;
+			width: 47%;
+			height: 2em;
+			border-radius: 15px;
+			font-size: 14px;
+			border: 10px;
+			padding: 10px;
+			margin: 10px;
+			font-weight: bold;
+		}
+
+		.home_btn {
+			width: 8%;
+			max-width: 1080px;
+			display: inline-block;
+			position: fixed;
+			left: 90%;
+			top: 95%;
+			border-radius: 15px;
+			border: 10px;
+			padding: 10px;
+			font-weight: bold;
+			overflow-x: hidden;
+		}
+
+		.home_btn:hover {
+			cursor: pointer;
+			background: linear-gradient(to right, #11998e, #38ef7d);
+			color: white;
+		}
+
+		.home_btn:focus {
+			outline: none;
+		}
+
+		.voice {
+			display: none;
+			border-radius: 50px;
+			border: 10px;
+			padding: 10px;
+			overflow-x: hidden;
+			width: 4%;
+		}
+
+		.voice:hover {
+			cursor: pointer;
+		}
+
+		.voice:focus {
+			outline: none;
+		}
+
+		#eng_description {
+			font-size: 2em;
+			padding: 7px;
+			margin: 10px;
+			display: none;
+		}
+
+		#rus_description {
+			font-size: 2em;
+			padding: 7px;
+			margin: 10px;
+			display: none;
+		}
+	</style>
+</head>
+<body>
+	<div class="slice">
+		<h3>От какого до какого слова спрашивать (включительно)</h3>
+
+		<input id="slice_1" type="text" name="text" placeholder="200" required="">
+		<input id="slice_2" type="text" name="text" placeholder="400" required="">
+		<button class="btn">Подтвердить</button>
+	</div>
+
+	<div class="learning">
+		<div id="word"></div>
+		<input id="inp" type="text" name="text" placeholder="перевод">
+		<button id="show_answer_btn">Показать ответ</button>
+		<div id="answer"></div>
+		<div id="eng_description"></div>
+		<div id="rus_description"></div>
+		<br><button id="btn">Следующее слово</button></br>		
+	</div>
+
+	<button class="home_btn">Home</button>
+	<button class="voice"><img src="https://img.icons8.com/material-rounded/16/000000/speaker.png"/></button>
+
+	<script src="/eel.js"></script>
+	<script>
+		let slice_1;
+		let slice_2;
+		let list;
+		let i = 0;  // индекс для слова
+		let k = 0;  // индекс для voice
+		let words;
+		let translation;
+		let eng_description;
+		let rus_description;
+
+		async function get_slice() {
+			slice_1 = document.getElementById('slice_1').value;
+			slice_2 = document.getElementById('slice_2').value;
+
+			list = await eel.get_word(slice_1, slice_2)();
+
+			document.getElementsByClassName('slice')[0].style.display = 'none';						
+			document.getElementsByClassName('home_btn')[0].style.display = 'inline-block';
+			document.getElementsByClassName('learning')[0].style.display = 'inline-block';
+			document.getElementsByClassName('voice')[0].style.display = 'inline-block';
+
+			words = list[0];
+			translation = list[1];
+			eng_description = list[2];
+			rus_description = list[3];
+			
+			document.getElementById('word').innerHTML = words[i];
+			document.getElementById('eng_description').innerHTML = eng_description[i];
+			document.getElementById('rus_description').innerHTML = rus_description[i];
+		};
+
+		async function voice() {
+			let split_list = words[k].split(', ');
+			if (split_list.length === 1){
+				await eel.voice(words[k])();	
+			} else {
+				if (document.getElementById('btn').style.display === 'inline-block'){
+					await eel.voice(translation[k])();
+				}
+			}
+		};
+
+		function show_answer() {
+			let inp = document.getElementById('inp')
+			let answer = document.getElementById('answer')
+
+			document.getElementById('show_answer_btn').style.display = 'none';
+			document.getElementById('eng_description').style.display = 'inline-block';
+			document.getElementById('rus_description').style.display = 'inline-block';
+			
+			inp.style.display = 'none';
+			answer.style.display = 'inline-block';
+			document.getElementById('btn').style.display = 'inline-block';
+			
+			
+			if (inp.value === translation[i]){
+				answer.innerHTML = 'Good job';
+				inp.value = '';
+			}
+
+			else {
+				answer.innerHTML = translation[i];
+				inp.value = '';
+			}
+			
+			i++;
+
+			if (typeof(words[i]) === 'undefined') {
+				document.getElementById('btn').style.display = 'none';
+			}
+		}
+
+		function show_new_word() {
+			if (typeof(words[i]) === 'undefined') {}
+
+			else {
+				document.getElementById('show_answer_btn').style.display = 'inline-block';
+				document.getElementById('inp').style.display = 'inline-block';
+				document.getElementById('eng_description').style.display = 'none';
+				document.getElementById('rus_description').style.display = 'none';
+				document.getElementById('answer').style.display = 'none';
+				document.getElementById('btn').style.display = 'none';
+				document.getElementById('word').innerHTML = words[i];
+				document.getElementById('eng_description').innerHTML = eng_description[i];
+				document.getElementById('rus_description').innerHTML = rus_description[i]; 
+			}
+			k++;
+		}
+
+		function come_back_to_home() {
+			document.getElementsByClassName('learning')[0].style.display = 'none';
+			document.getElementsByClassName('home_btn')[0].style.display = 'none';
+			document.getElementsByClassName('voice')[0].style.display = 'none';
+			document.getElementsByClassName('slice')[0].style.display = 'inline-block';
+			document.getElementById('slice_1').value = '';
+			document.getElementById('slice_2').value = '';
+			i = 0;
+			k = 0;
+		}
+
+		document.getElementsByClassName('btn')[0].addEventListener('click', function(){
+			get_slice();
+		});
+
+		document.getElementById('show_answer_btn').addEventListener('click', function(){
+			show_answer();
+		});
+
+		document.getElementById('btn').addEventListener('click', function(){
+			show_new_word();
+		});
+
+		document.getElementsByClassName('home_btn')[0].addEventListener('click', function(){
+			come_back_to_home();
+		});
+
+		document.getElementsByClassName('voice')[0].addEventListener('click', function(){
+			voice();
+		});
+
+	</script>
+</body>
+</html>
